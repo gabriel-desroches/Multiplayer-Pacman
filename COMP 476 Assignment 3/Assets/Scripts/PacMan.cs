@@ -6,6 +6,7 @@ using UnityEngine;
 public class PacMan : MonoBehaviour
 {
     public float speed = 0.5f;
+    public LayerMask unwalkableLayer;
     Vector3 dest = Vector3.zero;
 
     // Start is called before the first frame update
@@ -24,6 +25,12 @@ public class PacMan : MonoBehaviour
         // Check for Input if not moving
         if ((Vector3)transform.position == dest)
         {
+
+            print(valid(Vector3.forward) + " Up");
+            print(valid(Vector3.right) + " Right");
+            print(valid(-Vector3.forward) + " down");
+            print(valid(-Vector3.right) + " Left");
+
             if (Input.GetKey(KeyCode.UpArrow) && valid(Vector3.forward))
                 dest = (Vector3)transform.position + Vector3.forward;
             if (Input.GetKey(KeyCode.RightArrow) && valid(Vector3.right))
@@ -34,21 +41,18 @@ public class PacMan : MonoBehaviour
                 dest = (Vector3)transform.position - Vector3.right;
         }
 
-        print(valid(Vector3.forward));
-        print(valid(Vector3.right));
-        print(valid(-Vector3.forward));
-        print(valid(-Vector3.right));
-        print("Dest " + dest);
+        
+        //print("Dest " + dest);
         //print("Transform position " + transform.position);
     }
 
     bool valid(Vector3 dir)
     {
         // Cast Line from 'next to Pac-Man' to 'Pac-Man'
-        Vector3 pos = transform.position;
+        Vector3 pos = transform.position - new Vector3(0.0f, 0.25f, 0.0f);
         Vector3 target = pos + dir;
-        //print("target " + target);
-        return !Physics.Linecast(pos, pos + dir);
+       
+        return !Physics.Linecast(pos, pos + dir, unwalkableLayer);
     }
 
 }
