@@ -14,7 +14,7 @@ GameObject:
   - component: {fileID: 2998159101062240227}
   - component: {fileID: 2017613660157372699}
   - component: {fileID: 2017613660157372698}
-  m_Layer: 0
+  m_Layer: 7
   m_Name: Pac Man
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -127,6 +127,6 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   speed: 0.1
-  pelletsLayer:
+  unwalkableLayer:
     serializedVersion: 2
-    m_Bits: 128
+    m_Bits: 64

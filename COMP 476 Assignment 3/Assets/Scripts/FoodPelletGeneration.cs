@@ -2,7 +2,7 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
-public class FoodPellets : MonoBehaviour
+public class FoodPelletGeneration : MonoBehaviour
 {
     [SerializeField]
     private GameObject pellets;
@@ -13,7 +13,7 @@ public class FoodPellets : MonoBehaviour
     void Start()
     {
         //Loop to create all the food pellets where no intersection with something marked unwalkable
-        for (float i = -12.50f; i <= 12.50f; i ++)
+        for (float i = -12.50f; i <= 12.50f; i++)
         {
             for (float j = -13.50f; j <= 13.50; j++)
             {
