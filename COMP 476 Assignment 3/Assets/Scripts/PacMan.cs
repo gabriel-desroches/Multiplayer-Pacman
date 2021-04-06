@@ -1,18 +1,28 @@
+using Photon.Pun;
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
 //Movement with help from https://noobtuts.com/unity/2d-pacman-game
-public class PacMan : MonoBehaviour
+public class PacMan : MonoBehaviourPunCallbacks
 {
-    
-    public LayerMask unwalkableLayer;
-    Vector3 dest = Vector3.zero;
+    [Tooltip("The local player instance. Use this to know if the local player is represented in the Scene")]
+    public static GameObject LocalPlayerInstance;
 
+    public LayerMask unwalkableLayer;
+
+    [SerializeField]
+    private AudioClip[] audioClips;
+    private AudioSource audioSource;
     private float speed = 0.1f;
     private int score = 0;
+    private Vector3 dest = Vector3.zero;
 
-    // Start is called before the first frame update
+    private void Awake()
+    {
+        audioSource = GetComponent<AudioSource>();    
+    }
+
     void Start()
     {
         dest = transform.position;
@@ -21,22 +31,35 @@ public class PacMan : MonoBehaviour
     // Update is called once per frame
     void FixedUpdate()
     {
-        HandleInputs();
+        if (photonView.IsMine)
+        {
+            HandleInputs();
+        }
+        
         
     }
 
     private void OnTriggerEnter(Collider other)
     {
+        if (!photonView.IsMine)
+        {
+            return;
+        }
+
         if (other.CompareTag("Pellet"))
         {
             Destroy(other.gameObject);
             score++;
+            GameManager.numOfPellets--; //Encapsulation todo
+            StartCoroutine(playEatingSound());
         }
         else if (other.CompareTag("Super Pellet"))
         {
             Destroy(other.gameObject);
             speed = 0.15f;
+            GameManager.numOfPellets--;
             StartCoroutine(ResetSpeed());
+            StartCoroutine(playEatingSound());
         }    
     }
 
@@ -75,4 +98,14 @@ public class PacMan : MonoBehaviour
         yield return new WaitForSeconds(3.0f);
         speed = 0.1f;
     }
+
+    IEnumerator playEatingSound()
+    {
+        audioSource.clip = audioClips[0];
+        audioSource.Play();
+        yield return new WaitForSeconds(audioClips[0].length + 0.010f);
+        audioSource.clip = audioClips[1];
+        audioSource.Play();
+    }
+
 }

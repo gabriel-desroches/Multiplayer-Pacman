@@ -49,8 +49,11 @@ public class GhostMovement : MonoBehaviour
         if (pathSuccessful)
         {
             path = newPath;
-            StopCoroutine("FollowPath");
-            StartCoroutine("FollowPath");
+            if (path.Length != 0)
+            {
+                StopCoroutine("FollowPath");
+                StartCoroutine("FollowPath");
+            }
         }
     }
 
