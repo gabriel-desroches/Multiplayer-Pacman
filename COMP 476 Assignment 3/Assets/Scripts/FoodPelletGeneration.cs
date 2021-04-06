@@ -7,7 +7,7 @@ public class FoodPelletGeneration : MonoBehaviour
     [SerializeField]
     private GameObject pellets;
 
-    public LayerMask unWalkableMask;
+    public LayerMask noFoodMask;
 
     // Start is called before the first frame update
     void Start()
@@ -18,7 +18,7 @@ public class FoodPelletGeneration : MonoBehaviour
             for (float j = -13.50f; j <= 13.50; j++)
             {
                 //Check for unwalkable mask
-                if (!Physics.CheckSphere(new Vector3(j, 0.5f, i), 0.25f, unWalkableMask))
+                if (!Physics.CheckSphere(new Vector3(j, 0.5f, i), 0.25f, noFoodMask))
                 {
                     Instantiate(pellets, new Vector3(j, 0.5f, i), Quaternion.identity);
                 }
