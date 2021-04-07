@@ -1,4 +1,5 @@
 using Photon.Pun;
+using Photon.Realtime;
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
@@ -20,6 +21,11 @@ public class PacMan : MonoBehaviourPunCallbacks
 
     private void Awake()
     {
+        // used in GameManager.cs: we keep track of the localPlayer instance to prevent instantiation when levels are synchronized
+        if (photonView.IsMine)
+        {
+            PacMan.LocalPlayerInstance = this.gameObject;
+        }
         audioSource = GetComponent<AudioSource>();    
     }
 
@@ -46,16 +52,20 @@ public class PacMan : MonoBehaviourPunCallbacks
             return;
         }
 
+        //Usually only the master client can Destroy photon network instantiated objects.
+        //My fix for this was to request ownership of the photonview's of contacted pellets and to then destroy them
+        //However, this fix wasn't working, so I changed the code in the PhotonNetwork API itself to allow any client
+        //to destroy network objects.
         if (other.CompareTag("Pellet"))
         {
-            Destroy(other.gameObject);
+            PhotonNetwork.Destroy(other.gameObject);
             score++;
             GameManager.numOfPellets--; //Encapsulation todo
             StartCoroutine(playEatingSound());
         }
         else if (other.CompareTag("Super Pellet"))
         {
-            Destroy(other.gameObject);
+            PhotonNetwork.Destroy(other.gameObject);
             speed = 0.15f;
             GameManager.numOfPellets--;
             StartCoroutine(ResetSpeed());

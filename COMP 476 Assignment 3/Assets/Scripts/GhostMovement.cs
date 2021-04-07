@@ -27,12 +27,12 @@ public class GhostMovement : MonoBehaviour
     bool canAskForPath = true;
     void FixedUpdate()
     {
-        dest = pacmanTranform.position;
+        //dest = pacmanTranform.position;
 
         if (ghostType == GhostTypes.Blinky && canAskForPath)
         {
             canAskForPath = false;
-            StartCoroutine(determinePath());
+            //StartCoroutine(determinePath());
         }
 
     }

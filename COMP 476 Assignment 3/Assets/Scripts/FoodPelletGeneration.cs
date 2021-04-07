@@ -1,3 +1,4 @@
+using Photon.Pun;
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
@@ -20,7 +21,7 @@ public class FoodPelletGeneration : MonoBehaviour
                 //Check for unwalkable mask
                 if (!Physics.CheckSphere(new Vector3(j, 0.5f, i), 0.25f, noFoodMask))
                 {
-                    Instantiate(pellets, new Vector3(j, 0.5f, i), Quaternion.identity);
+                    PhotonNetwork.InstantiateRoomObject("Food Pellet", new Vector3(j, 0.5f, i), Quaternion.identity);
                 }
             }
         }
