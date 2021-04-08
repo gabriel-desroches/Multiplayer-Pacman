@@ -1,14 +1,19 @@
 using Photon.Pun;
+using Photon.Realtime;
+using System;
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using UnityEngine.UI;
 
-public class GameManager : MonoBehaviour
+public class GameManager : MonoBehaviourPunCallbacks
 {
     [SerializeField]
     AudioClip[] audioClips;
     AudioSource audioSource;
     public GameObject playerPrefab;
+    public Text[] playerNameUI;
+    public Text[] playerScoreUI;
 
     private GameObject[] pellets;
     private GameObject[] superPellets;
@@ -55,6 +60,20 @@ public class GameManager : MonoBehaviour
 
     public void Update()
     {
+        for (int i = 0; i < 4; i++)
+        {
+            try
+            {
+                playerNameUI[i].text = PhotonNetwork.PlayerList[i].NickName;
+                playerScoreUI[i].text = PhotonNetwork.PlayerList[i].CustomProperties["Score"].ToString();
+            }
+            catch (Exception e) //For Empty slots
+            {
+                playerNameUI[i].text = "";
+                playerScoreUI[i].text = "";
+            }
+        }
+
         if(numOfPellets == 0)
         {
             endGame();
@@ -74,4 +93,19 @@ public class GameManager : MonoBehaviour
 
     }
 
+    //Handle the Score UI
+    public override void OnPlayerEnteredRoom(Player newPlayer)
+    {
+        print(newPlayer.NickName + " Has Entered the Room");
+    }
+
+    public override void OnPlayerLeftRoom(Player otherPlayer)
+    {
+        print(otherPlayer.NickName + " Has Left the Room");
+    }
+
+    public void UpdateUI()
+    {
+
+    }
 }

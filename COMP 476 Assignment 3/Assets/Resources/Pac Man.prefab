@@ -132,6 +132,7 @@ MonoBehaviour:
   unwalkableLayer:
     serializedVersion: 2
     m_Bits: 64
+  score: 0
   audioClips:
   - {fileID: 8300000, guid: 53adcf9014805a04c9469ea8dca10d7c, type: 3}
   - {fileID: 8300000, guid: 6410b895ad9e5ce4a8490299a4db63de, type: 3}

@@ -1,3 +1,4 @@
+using Photon.Pun;
 using UnityEngine;
 
 public class UIManager : MonoBehaviour
@@ -9,6 +10,7 @@ public class UIManager : MonoBehaviour
         if (string.IsNullOrWhiteSpace(PlayerName))
             return;
 
+        PhotonNetwork.NickName = PlayerName;
         PlayerPrefs.SetString(playerNamePrefKey, PlayerName);
     }
 }

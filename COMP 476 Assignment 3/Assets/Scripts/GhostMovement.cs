@@ -1,3 +1,4 @@
+using Photon.Pun;
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
@@ -29,11 +30,30 @@ public class GhostMovement : MonoBehaviour
     {
         //dest = pacmanTranform.position;
 
-        if (ghostType == GhostTypes.Blinky && canAskForPath)
+        if (ghostType == GhostTypes.Blinky && canAskForPath && PhotonNetwork.PlayerList.Length >= 1)
         {
             canAskForPath = false;
             //StartCoroutine(determinePath());
         }
+
+        if (ghostType == GhostTypes.Blinky && canAskForPath && PhotonNetwork.PlayerList.Length >= 2)
+        {
+            canAskForPath = false;
+            //StartCoroutine(determinePath());
+        }
+
+        if (ghostType == GhostTypes.Blinky && canAskForPath && PhotonNetwork.PlayerList.Length >= 3)
+        {
+            canAskForPath = false;
+            //StartCoroutine(determinePath());
+        }
+
+        if (ghostType == GhostTypes.Blinky && canAskForPath && PhotonNetwork.PlayerList.Length >= 4)
+        {
+            canAskForPath = false;
+            //StartCoroutine(determinePath());
+        }
+
 
     }
 

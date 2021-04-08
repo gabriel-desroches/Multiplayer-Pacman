@@ -3,6 +3,7 @@ using Photon.Realtime;
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using Hashtable = ExitGames.Client.Photon.Hashtable;
 
 //Movement with help from https://noobtuts.com/unity/2d-pacman-game
 public class PacMan : MonoBehaviourPunCallbacks
@@ -11,12 +12,12 @@ public class PacMan : MonoBehaviourPunCallbacks
     public static GameObject LocalPlayerInstance;
 
     public LayerMask unwalkableLayer;
+    //public int score = 0; //Encapsulation todo
 
     [SerializeField]
     private AudioClip[] audioClips;
     private AudioSource audioSource;
     private float speed = 0.1f;
-    private int score = 0;
     private Vector3 dest = Vector3.zero;
 
     private void Awake()
@@ -32,6 +33,14 @@ public class PacMan : MonoBehaviourPunCallbacks
     void Start()
     {
         dest = transform.position;
+
+        //Set inital score using custom properties as to sync between all players
+        if (photonView.IsMine)
+        {
+            Hashtable hash = new Hashtable();
+            hash.Add("Score", 0);
+            PhotonNetwork.LocalPlayer.SetCustomProperties(hash);
+        }
     }
 
     // Update is called once per frame
@@ -59,7 +68,7 @@ public class PacMan : MonoBehaviourPunCallbacks
         if (other.CompareTag("Pellet"))
         {
             PhotonNetwork.Destroy(other.gameObject);
-            score++;
+            IncreaseScore();
             GameManager.numOfPellets--; //Encapsulation todo
             StartCoroutine(playEatingSound());
         }
@@ -116,6 +125,18 @@ public class PacMan : MonoBehaviourPunCallbacks
         yield return new WaitForSeconds(audioClips[0].length + 0.010f);
         audioSource.clip = audioClips[1];
         audioSource.Play();
+    }
+
+    //Custom properties help from
+    //https://forum.photonengine.com/discussion/9937/example-for-custom-properties
+    public void IncreaseScore()
+    {
+
+        int score = (int)PhotonNetwork.LocalPlayer.CustomProperties["Score"];
+        score++;
+        Hashtable hash = new Hashtable();
+        hash.Add("Score", score);
+        PhotonNetwork.LocalPlayer.SetCustomProperties(hash);
     }
 
 }
