@@ -12,13 +12,14 @@ public class PacMan : MonoBehaviourPunCallbacks
     public static GameObject LocalPlayerInstance;
 
     public LayerMask unwalkableLayer;
-    //public int score = 0; //Encapsulation todo
 
     [SerializeField]
     private AudioClip[] audioClips;
     private AudioSource audioSource;
     private float speed = 0.1f;
     private Vector3 dest = Vector3.zero;
+    //PhotonView photonView;
+
 
     private void Awake()
     {
@@ -27,7 +28,8 @@ public class PacMan : MonoBehaviourPunCallbacks
         {
             PacMan.LocalPlayerInstance = this.gameObject;
         }
-        audioSource = GetComponent<AudioSource>();    
+        audioSource = GetComponent<AudioSource>();
+        //photonView = PhotonView.Get(this);
     }
 
     void Start()
@@ -40,6 +42,12 @@ public class PacMan : MonoBehaviourPunCallbacks
             Hashtable hash = new Hashtable();
             hash.Add("Score", 0);
             PhotonNetwork.LocalPlayer.SetCustomProperties(hash);
+
+            //This code is janky, used to give the ghosts our location
+            //TODO - find better way of doing this
+            Hashtable hashTmp = new Hashtable();
+            hashTmp.Add("Location", transform.position);
+            PhotonNetwork.LocalPlayer.SetCustomProperties(hashTmp);
         }
     }
 
@@ -49,9 +57,10 @@ public class PacMan : MonoBehaviourPunCallbacks
         if (photonView.IsMine)
         {
             HandleInputs();
+            SendLocation();
         }
         
-        
+      
     }
 
     private void OnTriggerEnter(Collider other)
@@ -69,17 +78,22 @@ public class PacMan : MonoBehaviourPunCallbacks
         {
             PhotonNetwork.Destroy(other.gameObject);
             IncreaseScore();
-            GameManager.numOfPellets--; //Encapsulation todo
+            photonView.RPC("reduceNumberOfPellets", RpcTarget.All); //Tell all clients to lower the pellet count
             StartCoroutine(playEatingSound());
         }
         else if (other.CompareTag("Super Pellet"))
         {
             PhotonNetwork.Destroy(other.gameObject);
             speed = 0.15f;
-            GameManager.numOfPellets--;
+            photonView.RPC("reduceNumberOfPellets", RpcTarget.All);
             StartCoroutine(ResetSpeed());
             StartCoroutine(playEatingSound());
-        }    
+        }
+        else if (other.CompareTag("Left Teleporter"))
+        {
+
+        }
+        else if (other.CompareTag("Right Teleporter")) ;
     }
 
     void HandleInputs()
@@ -131,12 +145,23 @@ public class PacMan : MonoBehaviourPunCallbacks
     //https://forum.photonengine.com/discussion/9937/example-for-custom-properties
     public void IncreaseScore()
     {
-
         int score = (int)PhotonNetwork.LocalPlayer.CustomProperties["Score"];
         score++;
         Hashtable hash = new Hashtable();
         hash.Add("Score", score);
         PhotonNetwork.LocalPlayer.SetCustomProperties(hash);
+    }
+    public void SendLocation()
+    {
+        Hashtable hash = new Hashtable();
+        hash.Add("Location", transform.position);
+        PhotonNetwork.LocalPlayer.SetCustomProperties(hash);
+    }
+
+    [PunRPC]
+    void reduceNumberOfPellets()
+    {
+        GameManager.numOfPellets--;
     }
 
 }

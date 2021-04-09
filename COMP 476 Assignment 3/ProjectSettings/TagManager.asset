@@ -8,6 +8,8 @@ TagManager:
   - Pellet
   - Super Pellet
   - PacMan
+  - Left Teleporter
+  - Right Teleporter
   layers:
   - Default
   - TransparentFX

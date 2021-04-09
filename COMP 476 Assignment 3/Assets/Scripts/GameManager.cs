@@ -19,7 +19,7 @@ public class GameManager : MonoBehaviourPunCallbacks
     private GameObject[] superPellets;
 
     public static GameManager Instance;
-    public static int numOfPellets;
+    public static int numOfPellets = -1;
 
     public void Awake()
     {
@@ -46,20 +46,22 @@ public class GameManager : MonoBehaviourPunCallbacks
             }
         }
 
-
-
-        //Soft coded to work with any level and detect how many pellets. Used for end of game.
-        pellets = GameObject.FindGameObjectsWithTag("Pellet");
-        superPellets = GameObject.FindGameObjectsWithTag("Super Pellet");
-        numOfPellets = pellets.Length + superPellets.Length;
-
-        //Clear for memory purposes
-        pellets = null;
-        superPellets = null;
+        StartCoroutine(findPelletsAfterDelay());
+      
     }
 
     public void Update()
     {
+        if (PhotonNetwork.IsMasterClient)
+        {
+            if (numOfPellets == 0)
+            {
+                endGame();
+            }
+        }
+
+        print(numOfPellets);
+        
         for (int i = 0; i < 4; i++)
         {
             try
@@ -72,11 +74,6 @@ public class GameManager : MonoBehaviourPunCallbacks
                 playerNameUI[i].text = "";
                 playerScoreUI[i].text = "";
             }
-        }
-
-        if(numOfPellets == 0)
-        {
-            endGame();
         }
 
         if (!audioSource.isPlaying)
@@ -93,6 +90,20 @@ public class GameManager : MonoBehaviourPunCallbacks
 
     }
 
+    IEnumerator findPelletsAfterDelay()
+    {
+        //Delay to make sure pellets are spawned on scene in time
+        yield return new WaitForSeconds(1.0f);
+        //Soft coded to work with any level and detect how many pellets. Used for end of game.
+        pellets = GameObject.FindGameObjectsWithTag("Pellet");
+        superPellets = GameObject.FindGameObjectsWithTag("Super Pellet");
+        numOfPellets = pellets.Length + superPellets.Length;
+
+        //Clear for memory purposes
+        pellets = null;
+        superPellets = null;
+    }
+
     //Handle the Score UI
     public override void OnPlayerEnteredRoom(Player newPlayer)
     {
@@ -102,10 +113,5 @@ public class GameManager : MonoBehaviourPunCallbacks
     public override void OnPlayerLeftRoom(Player otherPlayer)
     {
         print(otherPlayer.NickName + " Has Left the Room");
-    }
-
-    public void UpdateUI()
-    {
-
     }
 }

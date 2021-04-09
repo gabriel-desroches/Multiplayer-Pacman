@@ -1,11 +1,12 @@
 using Photon.Pun;
+using Photon.Realtime;
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.AI;
 
 //Will implement all ghost movements here, use enums to differentiate them.
-public class GhostMovement : MonoBehaviour
+public class GhostMovement : MonoBehaviourPunCallbacks
 {
     private enum GhostTypes { Blinky, Pinky, Inky, Clyde}; 
 
@@ -19,42 +20,46 @@ public class GhostMovement : MonoBehaviour
 
     Vector3[] path;
 
-    // Start is called before the first frame update
     void Start()
     {
-        
+        StartCoroutine(delayStart());
     }
 
-    bool canAskForPath = true;
+    //Each player has exactly one ghost assigned to them. Ghost will activate and deactive
+    //Depending on player count. TODO: Reset appropriate ghost on player leave room
+    bool canAskForPath = false;
     void FixedUpdate()
     {
-        //dest = pacmanTranform.position;
-
-        if (ghostType == GhostTypes.Blinky && canAskForPath && PhotonNetwork.PlayerList.Length >= 1)
+        if (PhotonNetwork.IsMasterClient)
         {
-            canAskForPath = false;
-            //StartCoroutine(determinePath());
+            if (ghostType == GhostTypes.Blinky && canAskForPath && PhotonNetwork.PlayerList.Length >= 1)
+            {
+                canAskForPath = false;
+                dest = (Vector3)PhotonNetwork.PlayerList[0].CustomProperties["Location"];
+                StartCoroutine(determinePath());
+            }
+
+            if (ghostType == GhostTypes.Inky && canAskForPath && PhotonNetwork.PlayerList.Length >= 2)
+            {
+                canAskForPath = false;
+                dest = (Vector3)PhotonNetwork.PlayerList[1].CustomProperties["Location"];
+                StartCoroutine(determinePath());
+            }
+
+            if (ghostType == GhostTypes.Pinky && canAskForPath && PhotonNetwork.PlayerList.Length >= 3)
+            {
+                canAskForPath = false;
+                dest = (Vector3)PhotonNetwork.PlayerList[2].CustomProperties["Location"];
+                StartCoroutine(determinePath());
+            }
+
+            if (ghostType == GhostTypes.Clyde && canAskForPath && PhotonNetwork.PlayerList.Length >= 4)
+            {
+                canAskForPath = false;
+                dest = (Vector3)PhotonNetwork.PlayerList[3].CustomProperties["Location"];
+                StartCoroutine(determinePath());
+            }
         }
-
-        if (ghostType == GhostTypes.Blinky && canAskForPath && PhotonNetwork.PlayerList.Length >= 2)
-        {
-            canAskForPath = false;
-            //StartCoroutine(determinePath());
-        }
-
-        if (ghostType == GhostTypes.Blinky && canAskForPath && PhotonNetwork.PlayerList.Length >= 3)
-        {
-            canAskForPath = false;
-            //StartCoroutine(determinePath());
-        }
-
-        if (ghostType == GhostTypes.Blinky && canAskForPath && PhotonNetwork.PlayerList.Length >= 4)
-        {
-            canAskForPath = false;
-            //StartCoroutine(determinePath());
-        }
-
-
     }
 
     IEnumerator determinePath()
@@ -100,6 +105,20 @@ public class GhostMovement : MonoBehaviour
             GetComponent<Rigidbody>().MovePosition(p);
             yield return null;
         }
+    }
+
+    IEnumerator delayStart()
+    {
+        yield return new WaitForSeconds(2.0f);
+        canAskForPath = true;
+    }
+
+    //Delay the pathfinding to give time for the custom properties to be set, results in a 
+    //NullReferenceException otherwise
+    public override void OnPlayerEnteredRoom(Player newPlayer)
+    {
+        canAskForPath = false;
+        StartCoroutine(delayStart());
     }
 
 }

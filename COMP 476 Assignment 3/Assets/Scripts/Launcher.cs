@@ -84,7 +84,7 @@ public class Launcher : MonoBehaviourPunCallbacks
         print("OnJoinedRoom Called");
         if (PhotonNetwork.CurrentRoom.PlayerCount == 1)
         {
-            print("Loading PacMan");
+            print("Loading PacMan Level");
             PhotonNetwork.LoadLevel(1);
         }
     }
