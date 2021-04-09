@@ -15,7 +15,9 @@ public class GhostMovement : MonoBehaviourPunCallbacks
     [SerializeField]
     private Transform pacmanTranform;
 
-    private float speed = 0.1f;
+    //Ghost will be slightly slower than players since they have 0 delay around
+    //corners and wonky connections means they can sometimes be faster, sometimes slower.
+    private float speed = 0.085f;
     private Vector3 dest;
 
     Vector3[] path;

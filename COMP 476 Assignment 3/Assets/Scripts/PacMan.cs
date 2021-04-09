@@ -18,7 +18,7 @@ public class PacMan : MonoBehaviourPunCallbacks
     private AudioSource audioSource;
     private float speed = 0.1f;
     private Vector3 dest = Vector3.zero;
-    //PhotonView photonView;
+    private Rigidbody rb;
 
 
     private void Awake()
@@ -29,7 +29,7 @@ public class PacMan : MonoBehaviourPunCallbacks
             PacMan.LocalPlayerInstance = this.gameObject;
         }
         audioSource = GetComponent<AudioSource>();
-        //photonView = PhotonView.Get(this);
+        rb = GetComponent<Rigidbody>();
     }
 
     void Start()
@@ -88,19 +88,40 @@ public class PacMan : MonoBehaviourPunCallbacks
             photonView.RPC("reduceNumberOfPellets", RpcTarget.All);
             StartCoroutine(ResetSpeed());
             StartCoroutine(playEatingSound());
-        }
+        }   
+        //Teleporters are hardcoded for now, todo: make smoother.
         else if (other.CompareTag("Left Teleporter"))
-        {
+        {   
+            //-13.5, 0.75, 4.5
+            // -13.5, 0.75, -3.5
+            Vector3 currentPos = transform.position;
+            currentPos.x = 13.5f;
+            transform.position = currentPos;
+            //Cancel any movement
+            dest = currentPos;
+            Vector3 p = Vector3.MoveTowards(transform.position, dest, speed);
+            rb.MovePosition(p);
 
         }
-        else if (other.CompareTag("Right Teleporter")) ;
+        else if (other.CompareTag("Right Teleporter"))
+        {
+            // 13.5, 0.75, 4.5
+            // 13.5, 0.75, -3.5
+            Vector3 currentPos = transform.position;
+            currentPos.x = -13.5f;
+            transform.position = currentPos;
+            dest = currentPos;
+            Vector3 p = Vector3.MoveTowards(transform.position, dest, speed);
+            rb.MovePosition(p);
+            
+        }
     }
 
     void HandleInputs()
     {
         // Move towards destination
         Vector3 p = Vector3.MoveTowards(transform.position, dest, speed);
-        GetComponent<Rigidbody>().MovePosition(p);
+        rb.MovePosition(p);
 
         // Check for Input if not moving
         if ((Vector3)transform.position == dest)
