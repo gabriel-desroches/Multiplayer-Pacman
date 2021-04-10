@@ -46,6 +46,12 @@ public class Grid : MonoBehaviour
 
     }
     
+    /*
+     * For Pac-Man: Neighbours are only on top and on sides,
+     * so algorithm is adjusted accordingly
+     * I wasn't sure the best way to do this actually, so I just continue;
+     * when abs x == abs y
+     */
     public List<Node> getNeighbours(Node node)
     {
         List<Node> neighbours = new List<Node>();
@@ -54,7 +60,7 @@ public class Grid : MonoBehaviour
         {
             for (int y = -1; y <= 1; y++)
             {
-                if (x == 0 && y == 0) continue;
+                if (x * x == y * y) continue; //Removes corner neighbours and this node
 
                 int checkX = node.gridX + x;
                 int checkY = node.gridY + y;

@@ -92,8 +92,8 @@ public class PacMan : MonoBehaviourPunCallbacks
         //Teleporters are hardcoded for now, todo: make smoother.
         else if (other.CompareTag("Left Teleporter"))
         {   
-            //-13.5, 0.75, 4.5
-            // -13.5, 0.75, -3.5
+            //-13.5, 0.75, 4.5 top left
+            // -13.5, 0.75, -3.5 bottom left
             Vector3 currentPos = transform.position;
             currentPos.x = 13.5f;
             transform.position = currentPos;

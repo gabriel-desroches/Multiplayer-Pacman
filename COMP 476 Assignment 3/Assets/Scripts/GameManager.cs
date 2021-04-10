@@ -12,8 +12,13 @@ public class GameManager : MonoBehaviourPunCallbacks
     AudioClip[] audioClips;
     AudioSource audioSource;
     public GameObject playerPrefab;
+
+    public Canvas scoreUI;
+    public Canvas endOfGameUI;
     public Text[] playerNameUI;
     public Text[] playerScoreUI;
+    public Text winnerText;
+    public Text winnerList;
 
     private GameObject[] pellets;
     private GameObject[] superPellets;
@@ -88,6 +93,19 @@ public class GameManager : MonoBehaviourPunCallbacks
     {
         Time.timeScale = 0;
 
+        scoreUI.gameObject.SetActive(false);
+        endOfGameUI.gameObject.SetActive(true);
+
+        List<string> winnerNames = FindWinners();
+
+        if (winnerNames.Count == 1) winnerText.text = "Winner:";
+        else winnerText.text = "Winners:";
+
+        foreach (string name in winnerNames)
+        {
+            winnerList.text += name + "\n";
+        }
+
     }
 
     IEnumerator findPelletsAfterDelay()
@@ -104,7 +122,27 @@ public class GameManager : MonoBehaviourPunCallbacks
         superPellets = null;
     }
 
-    //Handle the Score UI
+    public List<string> FindWinners()
+    {
+        int max = -1;
+        List<string> names = new List<string>();
+
+        foreach (Player player in PhotonNetwork.PlayerList)
+        {
+            int playerScore = (int)player.CustomProperties["Score"];
+            //Need to handle ties, since number of pellets is divisble by 2, 3, and 4
+            if (playerScore == max) names.Add(player.NickName);
+            else if (playerScore > max )
+            {
+                names.Clear();
+                names.Add(player.NickName);
+                max = playerScore;
+            }
+        }
+
+        return names;
+    }
+    
     public override void OnPlayerEnteredRoom(Player newPlayer)
     {
         print(newPlayer.NickName + " Has Entered the Room");
