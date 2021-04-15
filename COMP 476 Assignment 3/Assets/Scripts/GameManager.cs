@@ -93,6 +93,11 @@ public class GameManager : MonoBehaviourPunCallbacks
         scoreUI.gameObject.SetActive(false);
         endOfGameUI.gameObject.SetActive(true);
 
+        audioSource.Stop();
+        audioSource.clip = audioClips[1];
+        audioSource.loop = false;
+        audioSource.Play();
+
         List<string> winnerNames = FindWinners();
         print(winnerNames.Count + "Winners");
 

@@ -5124,6 +5124,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   audioClips:
   - {fileID: 8300000, guid: 68615572b87e02049a9002d069519580, type: 3}
+  - {fileID: 8300000, guid: 4eeae2b4c0417c64c8037e3fa6e9101f, type: 3}
   playerPrefab: {fileID: 8922150026201906008, guid: 9ad0b71be93d02a49981ffced597c97e, type: 3}
   scoreUI: {fileID: 1099808245}
   endOfGameUI: {fileID: 2071883638}
