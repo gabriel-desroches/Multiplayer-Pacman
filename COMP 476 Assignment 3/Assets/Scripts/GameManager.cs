@@ -57,15 +57,12 @@ public class GameManager : MonoBehaviourPunCallbacks
 
     public void Update()
     {
-        if (PhotonNetwork.IsMasterClient)
+        
+        if (numOfPellets == 0)
         {
-            if (numOfPellets == 0)
-            {
-                endGame();
-            }
+            endGame();
         }
-
-        print(numOfPellets);
+        
         
         for (int i = 0; i < 4; i++)
         {
@@ -97,6 +94,7 @@ public class GameManager : MonoBehaviourPunCallbacks
         endOfGameUI.gameObject.SetActive(true);
 
         List<string> winnerNames = FindWinners();
+        print(winnerNames.Count + "Winners");
 
         if (winnerNames.Count == 1) winnerText.text = "Winner:";
         else winnerText.text = "Winners:";
@@ -105,6 +103,8 @@ public class GameManager : MonoBehaviourPunCallbacks
         {
             winnerList.text += name + "\n";
         }
+
+        enabled = false;
 
     }
 
@@ -136,13 +136,19 @@ public class GameManager : MonoBehaviourPunCallbacks
             {
                 names.Clear();
                 names.Add(player.NickName);
+                print(player.NickName + " Has been added to winner list");
                 max = playerScore;
             }
         }
-
+        print("returning" + names.Count +  "values");
         return names;
     }
     
+    public void QuitGame()
+    {
+        Application.Quit();
+    }
+
     public override void OnPlayerEnteredRoom(Player newPlayer)
     {
         print(newPlayer.NickName + " Has Entered the Room");

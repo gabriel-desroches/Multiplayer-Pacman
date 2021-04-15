@@ -10,6 +10,7 @@ TagManager:
   - PacMan
   - Left Teleporter
   - Right Teleporter
+  - Ghost
   layers:
   - Default
   - TransparentFX

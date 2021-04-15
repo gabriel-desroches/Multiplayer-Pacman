@@ -1,4 +1,5 @@
 using Photon.Pun;
+
 using Photon.Realtime;
 using System.Collections;
 using System.Collections.Generic;
@@ -19,7 +20,6 @@ public class PacMan : MonoBehaviourPunCallbacks
     private float speed = 0.1f;
     private Vector3 dest = Vector3.zero;
     private Rigidbody rb;
-
 
     private void Awake()
     {
@@ -59,8 +59,8 @@ public class PacMan : MonoBehaviourPunCallbacks
             HandleInputs();
             SendLocation();
         }
-        
-      
+
+
     }
 
     private void OnTriggerEnter(Collider other)
@@ -85,13 +85,14 @@ public class PacMan : MonoBehaviourPunCallbacks
         {
             PhotonNetwork.Destroy(other.gameObject);
             speed = 0.15f;
+            IncreaseScore(); // Remove ? 
             photonView.RPC("reduceNumberOfPellets", RpcTarget.All);
             StartCoroutine(ResetSpeed());
             StartCoroutine(playEatingSound());
-        }   
+        }
         //Teleporters are hardcoded for now, todo: make smoother.
         else if (other.CompareTag("Left Teleporter"))
-        {   
+        {
             //-13.5, 0.75, 4.5 top left
             // -13.5, 0.75, -3.5 bottom left
             Vector3 currentPos = transform.position;
@@ -113,7 +114,11 @@ public class PacMan : MonoBehaviourPunCallbacks
             dest = currentPos;
             Vector3 p = Vector3.MoveTowards(transform.position, dest, speed);
             rb.MovePosition(p);
-            
+        }
+        else if (other.CompareTag("Ghost"))
+        {
+            print("saw ghost");
+            ResetPosition();
         }
     }
 
@@ -143,7 +148,7 @@ public class PacMan : MonoBehaviourPunCallbacks
         // Cast Line from 'next to Pac-Man' to 'Pac-Man'
         Vector3 pos = transform.position;
         Vector3 target = pos + dir;
-       
+
         return !Physics.Linecast(pos, pos + dir, unwalkableLayer);
     }
 
@@ -183,6 +188,22 @@ public class PacMan : MonoBehaviourPunCallbacks
     void reduceNumberOfPellets()
     {
         GameManager.numOfPellets--;
+    }
+
+
+    public void ResetPosition()
+    {
+
+        print("reset");
+        //Using hardcoded start location for now, need to fix
+        transform.position = new Vector3(0.5f, 0.75f, -3.5f);
+        dest = transform.position;
+        Vector3 p = Vector3.MoveTowards(transform.position, dest, speed);
+        rb.MovePosition(p);
+        enabled = false;
+        enabled = true;
+
+
     }
 
 }

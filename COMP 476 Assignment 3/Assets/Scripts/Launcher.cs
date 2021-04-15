@@ -89,4 +89,8 @@ public class Launcher : MonoBehaviourPunCallbacks
         }
     }
 
+    public void QuitGame()
+    {
+        Application.Quit();
+    }
 }
