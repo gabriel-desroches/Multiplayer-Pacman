@@ -85,7 +85,7 @@ public class PacMan : MonoBehaviourPunCallbacks
         {
             PhotonNetwork.Destroy(other.gameObject);
             speed = 0.15f;
-            IncreaseScore(); // Remove ? 
+            IncreaseScore(); //Uncomment this line and disable pellet generation script on game manager for easy demoing.
             photonView.RPC("reduceNumberOfPellets", RpcTarget.All);
             StartCoroutine(ResetSpeed());
             StartCoroutine(playEatingSound());
